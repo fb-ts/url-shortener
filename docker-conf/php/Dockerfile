@@ -11,7 +11,8 @@ RUN apt-get update -yqq \
 
 #install php extensions
 RUN docker-php-ext-install zip \
-  && docker-php-ext-install gd
+  && docker-php-ext-install gd \
+  && docker-php-ext-install bcmath
 
 #install pgsql extensions
 RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
