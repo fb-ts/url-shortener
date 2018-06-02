@@ -3,6 +3,8 @@
 namespace UrlShortener\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use UrlShortener\Observers\ShortenerObserver;
+use UrlShortener\Shortener;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Shortener::observe(ShortenerObserver::class);
     }
 
     /**
