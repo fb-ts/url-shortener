@@ -23,4 +23,18 @@ class ShortenController extends Controller
 
         return response()->json(['success' => true, 'hash' => $shortener->hash]);
     }
+
+    /**
+     * Show shorten url
+     *
+     * @param string $hash
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show($hash): \Illuminate\Http\JsonResponse
+    {
+        $url = Shortener::where('hash', $hash)->firstOrFail(['url'])->url;
+        $success = true;
+
+        return response()->json(compact('success', 'url'));
+    }
 }
