@@ -19,4 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['throttle']], function () {
     Route::post('shorten', 'ShortenController@store');
+    Route::get('{hash}', 'ShortenController@show')
+        ->where('hash', '[0-9a-zA-z]+');
 });
