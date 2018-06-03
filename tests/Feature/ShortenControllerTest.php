@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Hashids;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
@@ -14,9 +15,9 @@ class ShortenControllerTest extends TestCase
     /**
      * Shorten url
      *
-     * @return void
+     * @return array
      */
-    public function testShorten(): void
+    public function testShorten(): array
     {
         $url = $this->faker->url;
 
@@ -27,6 +28,7 @@ class ShortenControllerTest extends TestCase
             ->assertExactJson(['success' => true, 'hash' => $hash]);
 
         $this->assertDatabaseHas('shorteners', ['id' => Hashids::decode($hash), 'hash' => $hash, 'url' => $url]);
+        return compact('hash', 'url');
     }
 
     /**
@@ -108,4 +110,53 @@ class ShortenControllerTest extends TestCase
         $this->assertDatabaseHas('shorteners', ['url' => $url]);
     }
 
+
+    /**
+     * Get url by shorten hash
+     * @depends testShorten
+     * @param array $params Keys: hash, url
+     */
+    public function testShow($params): void
+    {
+        /**
+         * @var string $hash
+         * @var string $url
+         */
+        extract($params);
+        $response = $this->get("/api/$hash");
+        $response->assertStatus(200)
+            ->assertExactJson(['success' => true, 'url' => $url]);
+    }
+
+
+    /**
+     * Get url by shorten invalid hash
+     */
+    public function testInvalidHashWithoutExceptionHandling(): void
+    {
+        $this->withoutExceptionHandling();
+
+        $hash = 'a';
+        try {
+            $this->get("/api/$hash");
+        } catch (ModelNotFoundException $e) {
+            $this->assertEquals(
+                'No query results for model [UrlShortener\Shortener].',
+                $e->getMessage()
+            );
+            return;
+        }
+        $this->fail('The hash found result when it should have failed.');
+    }
+
+
+    /**
+     * Get url by shorten invalid hash, check http status
+     */
+    public function testInvalidHashPageNotFound404(): void
+    {
+        $hash = 'a';
+        $response = $this->get("/api/$hash");
+        $response->assertStatus(404);
+    }
 }
