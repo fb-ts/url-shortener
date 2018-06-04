@@ -16,7 +16,7 @@ class CreateTableShorteners extends Migration
         Schema::create('shorteners', function (Blueprint $table) {
             $table->increments('id');
             $table->string('url', 2048);
-            $table->string('hash')->unique();
+            $table->string('hash')->unique()->nullable();
             $table->timestamps();
         });
     }
