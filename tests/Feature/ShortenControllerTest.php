@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
+use UrlShortener\Shortener;
 
 class ShortenControllerTest extends TestCase
 {
@@ -115,8 +116,9 @@ class ShortenControllerTest extends TestCase
      * Get url by shorten hash
      * @depends testShorten
      * @param array $params Keys: hash, url
+     * @return Shortener
      */
-    public function testShow($params): void
+    public function testShow($params): Shortener
     {
         /**
          * @var string $hash
@@ -126,6 +128,9 @@ class ShortenControllerTest extends TestCase
         $response = $this->get("/api/$hash");
         $response->assertStatus(200)
             ->assertExactJson(['success' => true, 'url' => $url]);
+
+        $shortener = Shortener::where('hash', $hash)->first();
+        return $shortener;
     }
 
 
@@ -158,5 +163,28 @@ class ShortenControllerTest extends TestCase
         $hash = 'a';
         $response = $this->get("/api/$hash");
         $response->assertStatus(404);
+    }
+
+
+    /**
+     * First visit save
+     * @depends testShow
+     * @param Shortener $shortener
+     */
+    public function testFirstVisit($shortener): void
+    {
+        $this->assertDatabaseHas('visits', ['shortener_id' => $shortener->id, 'date' => date('Y-m-d'), 'count' => 1]);
+    }
+
+
+    /**
+     * Second visit save
+     * @depends testShow
+     * @param Shortener $shortener
+     */
+    public function testSecondVisit($shortener): void
+    {
+        $this->get("/api/{$shortener->id}");
+        $this->assertDatabaseHas('visits', ['shortener_id' => $shortener->id, 'date' => date('Y-m-d'), 'count' => 2]);
     }
 }
