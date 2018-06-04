@@ -32,9 +32,11 @@ class ShortenController extends Controller
      */
     public function show($hash): \Illuminate\Http\JsonResponse
     {
-        $url = Shortener::where('hash', $hash)->firstOrFail(['url'])->url;
-        $success = true;
+        $shortener = Shortener::where('hash', $hash)->firstOrFail();
 
-        return response()->json(compact('success', 'url'));
+        $visit = $shortener->visits()->firstOrCreate(['date' => date('Y-m-d')]);
+        $visit->update(['count' => \DB::raw('count + 1')]);
+
+        return response()->json(['success' => true, 'url' => $shortener->url]);
     }
 }
