@@ -17,7 +17,7 @@ class CreateVisitsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('shortener_id');
             $table->date('date');
-            $table->unsignedInteger('count');
+            $table->unsignedInteger('count')->default(0);
             $table->timestamps();
 
             $table->foreign('shortener_id')->references('id')->on('shorteners');
