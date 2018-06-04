@@ -14,4 +14,11 @@ class Shortener extends Model
      */
     protected $fillable = ['url'];
 
+    /**
+     * Get the visits for the url
+     */
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
 }
