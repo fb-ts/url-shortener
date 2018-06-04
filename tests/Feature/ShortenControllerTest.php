@@ -129,8 +129,7 @@ class ShortenControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertExactJson(['success' => true, 'url' => $url]);
 
-        $shortener = Shortener::where('hash', $hash)->first();
-        return $shortener;
+        return Shortener::where('hash', $hash)->first();
     }
 
 
@@ -157,6 +156,7 @@ class ShortenControllerTest extends TestCase
 
     /**
      * Get url by shorten invalid hash, check http status
+     * @return void
      */
     public function testInvalidHashPageNotFound404(): void
     {
@@ -170,6 +170,7 @@ class ShortenControllerTest extends TestCase
      * First visit save
      * @depends testShow
      * @param Shortener $shortener
+     * @return void
      */
     public function testFirstVisit($shortener): void
     {
@@ -181,10 +182,11 @@ class ShortenControllerTest extends TestCase
      * Second visit save
      * @depends testShow
      * @param Shortener $shortener
+     * @return void
      */
     public function testSecondVisit($shortener): void
     {
-        $this->get("/api/{$shortener->id}");
+        $this->get("/api/{$shortener->hash}");
         $this->assertDatabaseHas('visits', ['shortener_id' => $shortener->id, 'date' => date('Y-m-d'), 'count' => 2]);
     }
 }
