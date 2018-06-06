@@ -16,7 +16,7 @@ class ShortenerObserver
      */
     public function created(Shortener $shortener): void
     {
-        $shortener->hash = Hashids::encode($shortener->id);
+        $shortener->hash = Hashids::connection(Shortener::class)->encode($shortener->id);
         $shortener->save();
     }
 }
