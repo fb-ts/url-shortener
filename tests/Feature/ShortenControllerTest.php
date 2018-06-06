@@ -28,7 +28,7 @@ class ShortenControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertExactJson(['success' => true, 'hash' => $hash]);
 
-        $this->assertDatabaseHas('shorteners', ['id' => Hashids::decode($hash), 'hash' => $hash, 'url' => $url]);
+        $this->assertDatabaseHas('shorteners', ['id' => Hashids::connection(Shortener::class)->decode($hash)[0], 'hash' => $hash, 'url' => $url]);
         return compact('hash', 'url');
     }
 
