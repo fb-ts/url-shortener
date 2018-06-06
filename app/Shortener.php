@@ -3,9 +3,12 @@
 namespace UrlShortener;
 
 use Illuminate\Database\Eloquent\Model;
+use UrlShortener\Http\Traits\Hashidable;
 
 class Shortener extends Model
 {
+
+    use Hashidable;
 
     /**
      * The attributes that are mass assignable.
