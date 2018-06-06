@@ -11,6 +11,8 @@
 
 declare(strict_types=1);
 
+use UrlShortener\Shortener;
+
 return [
 
     /*
@@ -44,9 +46,9 @@ return [
             'length' => 0,
         ],
 
-        'alternative' => [
-            'salt' => 'your-salt-string',
-            'length' => 'your-length-integer',
+        Shortener::class => [
+            'salt' => Shortener::class . env('APP_KEY'),
+            'length' => 0,
         ],
 
     ],
