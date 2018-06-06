@@ -30,10 +30,8 @@ class ShortenController extends Controller
      * @param string $hash
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show($hash): \Illuminate\Http\JsonResponse
+    public function show($shortener): \Illuminate\Http\JsonResponse
     {
-        $shortener = Shortener::where('hash', $hash)->firstOrFail();
-
         $visit = $shortener->visits()->firstOrCreate(['date' => date('Y-m-d')]);
         $visit->update(['count' => \DB::raw('count + 1')]);
 
